@@ -34,7 +34,7 @@ abstract class LazyModel extends Model {
 			if (isset($associations[$alias]) || in_array($alias, array_keys($this->__joinClasses))) {
 				$class = isset($associations[$alias]) ? $associations[$alias]['className'] : $this->__joinClasses[$alias];
 				$this->__constructLazyLinkedModel($alias, $class);
-				return ClassRegistry::getObject($alias);
+				return $this->{$alias};
 			}
 		}
 	}
