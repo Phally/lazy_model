@@ -1,45 +1,31 @@
 <?php
 abstract class LazyModel extends Model {
-	public $actsAs = array('Containable');
-	
-	private $__userAssociations = array();
-	private $__aliases = array();
-	private $__joinClasses = array();
+	private $map = array();
 	
 	public function __construct($id = false, $table = null, $ds = null) {
-		
 		foreach ($this->__associations as $type) {
-			$this->__userAssociations[$type] = $this->{$type};
-			$this->__aliases = array_merge($this->__aliases, array_keys($this->{$type}));
+			foreach ($this->{$type} as $key => $properties) {
+				$this->map($type, $key, $properties, $id);
+			}
 		}
-		
-		foreach (Set::extract('/with/.', array_values($this->hasAndBelongsToMany)) as $raw) {
-			list($plugin, $alias) = pluginSplit($raw);
-			$this->__joinClasses[$alias] = $raw;
-		}
-		
 		parent::__construct($id, $table, $ds);
-		
 	}
-	
+
 	public function __constructLinkedModel() {
 	}
-	
+
 	public function __isset($alias) {
-		return $alias && in_array($alias, array_merge($this->__aliases, $this->__joinClasses));
+		return array_key_exists($alias, $this->map);
 	}
 	
 	public function __get($alias) {
-		foreach ($this->__userAssociations as $type => $associations) {
-			if (isset($associations[$alias]) || in_array($alias, array_keys($this->__joinClasses))) {
-				$class = isset($associations[$alias]) ? $associations[$alias]['className'] : $this->__joinClasses[$alias];
-				$this->__constructLazyLinkedModel($alias, $class);
-				return $this->{$alias};
-			}
+		if (isset($this->map[$alias])) {
+			$this->constructLazyLinkedModel($alias, $this->map[$alias]);
 		}
+		return $this->{$alias};
 	}
 	
-	private function __constructLazyLinkedModel($alias, $class = null) {
+	private function constructLazyLinkedModel($alias, $class = null) {
 		$this->{$alias} = ClassRegistry::init(compact('class', 'alias'));
 		if (strpos($class, '.') !== false) {
 			ClassRegistry::addObject($class, $this->{$alias});
@@ -49,16 +35,41 @@ abstract class LazyModel extends Model {
 	
 	public function bindModel($models, $reset = true) {
 		foreach ($models as $type => &$data) {
-			foreach ($data as $alias => &$join) {
-				if ($type == 'belongsTo' && isset($this->__userAssociations['hasMany'][$alias]['className'])) {
-					$join['className'] = $this->__userAssociations['hasMany'][$alias]['className'];
-				}
-				$this->__userAssociations[$type][$alias] = $join;
-				$this->__aliases[] = $alias;
+			foreach ($data as $key => &$properties) {
+				$this->map($type, $key, $properties);
 			}
 		}
 		parent::bindModel($models, $reset);
 	}
 	
+	private function map($type, $key, $properties, $id = null) {
+		if (is_numeric($key)) {
+			list($plugin, $alias) = pluginSplit($properties);
+			$properties = array('className' => $properties);
+		} else {
+			$alias = $key;
+		}
+		
+		$this->addToMap($alias, $properties['className']);
+		
+		if ($type == 'hasAndBelongsToMany') {
+			if (isset($properties['with'])) {
+				list($plugin, $alias) = pluginSplit($properties['with']);
+				$this->addToMap($alias, $properties['with']);
+			} else {
+				$current = (is_array($id) && isset($id['alias'])) ? $id['alias'] : get_class($this);
+				$aliases = array($alias, $current);
+				sort($aliases);
+				$alias = Inflector::pluralize($aliases[0]) . $aliases[1];
+				$this->addToMap($alias, $alias);
+			}
+		}
+	}
+	
+	private function addToMap($alias, $class) {
+		if (!isset($this->map[$alias])) {
+			$this->map[$alias] = $class;
+		}
+	}
 }
 ?>
