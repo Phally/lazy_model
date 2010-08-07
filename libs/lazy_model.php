@@ -44,16 +44,10 @@ abstract class LazyModel extends Model {
 			$this->tableToModel[$this->{$assoc}->table] = $assoc;
 		}
 	}
-	
+
 	private function map($key, $properties) {
 		list($alias, $properties) = $return = $this->properties($key, $properties);
 		$this->map[$alias] = $properties['className'];
-		return $return;
-	}
-
-	private function unmap($key, $properties) {
-		list($alias, $properties) = $return = $this->properties($key, $properties);
-		unset($this->map[$alias]);
 		return $return;
 	}
 
