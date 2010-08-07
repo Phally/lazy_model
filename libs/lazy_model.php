@@ -9,7 +9,7 @@
  * submodule). Then make your AppModel extend this class and that is it:
  *
  * <?php
- * App::import('Model', 'LazyModel.LazyModel');
+ * App::import('Lib', 'LazyModel.LazyModel');
  * class AppModel extends LazyModel {
  * }
  * ?>
