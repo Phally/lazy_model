@@ -1,53 +1,48 @@
 <?php
 abstract class LazyModel extends Model {
+
 	private $map = array();
-	private $auto = array();
-	
+
 	public function __construct($id = false, $table = null, $ds = null) {
-		foreach ($this->__associations as $type) {
+		foreach (array('hasMany', 'belongsTo', 'hasOne') as $type) {
 			foreach ((array)$this->{$type} as $key => $properties) {
-				$this->map(false, $type, $key, $properties, $id);
+				$this->map($key, $properties);
 			}
 		}
 		parent::__construct($id, $table, $ds);
 	}
-
-	public function __constructLinkedModel() {
+	
+	public function __constructLinkedModel($assoc, $className = null) {
+		if (!isset($this->map[$assoc])) {
+			parent::__constructLinkedModel($assoc, $className);
+		}
 	}
-
+	
 	public function __isset($alias) {
-		return array_key_exists($alias, $this->map);
+		return isset($this->map[$alias]);
 	}
 	
 	public function __get($alias) {
-		if (isset($this->map[$alias])) {
+		if (!property_exists($this, $alias) && isset($this->map[$alias])) {
 			$this->constructLazyLinkedModel($alias, $this->map[$alias]);
 			return $this->{$alias};
 		}
 	}
 	
-	private function constructLazyLinkedModel($alias, $class = null) {
-		$this->{$alias} = ClassRegistry::init(compact('class', 'alias'));
-		if (in_array($alias, $this->auto)) {
-			ClassRegistry::removeObject($alias);
-		} else {
-			if (strpos($class, '.') !== false) {
-				ClassRegistry::addObject($class, $this->{$alias});
-			}
+	private function constructLazyLinkedModel($assoc, $className = null) {
+		if (empty($className)) {
+			$className = $assoc;
 		}
-		$this->tableToModel[$this->{$alias}->table] = $alias;
+		$this->{$assoc} = ClassRegistry::init(array('class' => $className, 'alias' => $assoc));
+		if (strpos($className, '.') !== false) {
+			ClassRegistry::addObject($className, $this->{$assoc});
+		}
+		if ($assoc) {
+			$this->tableToModel[$this->{$assoc}->table] = $assoc;
+		}
 	}
 	
-	public function bindModel($models, $reset = true) {
-		foreach ($models as $type => &$data) {
-			foreach ($data as $key => &$properties) {
-				$this->map(true, $type, $key, $properties);
-			}
-		}
-		return parent::bindModel($models, $reset);
-	}
-	
-	private function map($force, $type, $key, $properties, $id = null) {
+	private function map($key, $properties) {
 		if (is_numeric($key)) {
 			list($plugin, $alias) = pluginSplit($properties);
 			$properties = array('className' => $properties);
@@ -57,47 +52,7 @@ abstract class LazyModel extends Model {
 				$properties['className'] = $alias;
 			}
 		}
-		
-		$this->addToMap($alias, $properties['className'], $force);
-		
-		if ($type == 'hasAndBelongsToMany') {
-			if (isset($properties['with'])) {
-				if (is_array($properties['with'])) {
-					$properties['with'] = key($properties['with']);
-				}
-				list($plugin, $alias) = pluginSplit($properties['with']);
-				$this->addToMap($alias, $properties['with'], $force);
-			} else {
-				if (isset($properties['joinTable'])) {
-					$alias = Inflector::classify($properties['joinTable']);
-					$this->addToMap($alias, $alias, $force);
-				} else {
-					$current = (is_array($id) && isset($id['alias'])) ? $id['alias'] : get_class($this);
-					$aliases = array($alias, $current);
-					sort($aliases);
-					$alias = Inflector::pluralize($aliases[0]) . $aliases[1];
-					$this->addToMap($alias, $alias, $force);
-				}
-				$this->auto[] = $alias;
-				if (count($this->{$alias}->schema()) <= 2 && $this->{$alias}->primaryKey !== false) {
-					if ($this->useTable) {
-						$table = $this->useTable;
-					} else {
-						$table = Inflector::tableize(get_class($this));
-					}
-					$this->{$alias}->primaryKey = Inflector::singularize($table) . '_id';
-				}
-			}
-		}
-	}
-	
-	private function addToMap($alias, $class, $force) {
-		if (!isset($this->map[$alias])) {
-			$this->map[$alias] = $class;
-		} elseif($force) {
-			$this->map[$alias] = $class;
-			$this->constructLazyLinkedModel($alias, $class);
-		}
+		$this->map[$alias] = $properties['className'];
 	}
 }
 ?>
