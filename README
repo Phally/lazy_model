@@ -43,8 +43,8 @@ A:	This is by design. When importing a Model using App::import() CakePHP will au
 Q:	My HABTM isn't completely lazy loaded, is this a bug?
 A:	No, full lazy loading only works when you specify your own model using the 'with' key in the
 		association. This is because when using an auto model as join model CakePHP will need the two
-		other models to guess the name of the join model and they still would be instatiated. So if you
-		want to speed that up, use a 'with' model or don't use HABTM at all.
+		other models to guess the name of the join model and they still would be instantiated. So if
+		you	want to speed that up, use a 'with' model or don't use HABTM at all.
 
 Q:	ACL breaks on CakePHP 1.2, is this a bug?
 A:	Yes, but not one of this plugin. It has to do with the PHP4 compatibility of CakePHP. The
