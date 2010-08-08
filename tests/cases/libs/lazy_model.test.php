@@ -1,5 +1,5 @@
 <?php
-App::import('Libs', 'LazyModel.LazyModel');
+App::import('Lib', 'LazyModel.LazyModel');
 abstract class LazyAppModel extends LazyModel {
 }
 
