@@ -18,6 +18,7 @@
  *
  * Inspiration from:
  * - http://github.com/mcurry/lazy_loader
+ * - http://bin.cakephp.org/saved/39855
  *
  * @author Frank de Graaf (Phally)
  * @link http://www.frankdegraaf.net/
