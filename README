@@ -14,7 +14,7 @@ Facts:
 Setup:
 
 1. Clone the plugin to you APP/plugins directory (or as a git submodule in that folder).
-2. Put the folling in APP/app_model.php:
+2. Put the following code in APP/app_model.php:
 
    <?php
    App::import('Lib', 'LazyModel.LazyModel');
