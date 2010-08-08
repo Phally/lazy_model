@@ -50,6 +50,7 @@ abstract class LazyModel extends Model {
 				if ($type != 'hasAndBelongsToMany') {
 					$this->map($key, $properties);
 				} elseif (isset($properties['with'])) {
+					$this->map($key, $properties);
 					$this->map(0, (is_array($properties['with'])) ? key($properties['with']) : $properties['with']);
 				}
 			}
