@@ -147,7 +147,7 @@ abstract class LazyModel extends Model {
 	 */
 	private function properties($key, $properties) {
 		if (is_numeric($key)) {
-			list($plugin, $alias) = pluginSplit($properties);
+			list($plugin, $alias) = $this->pluginSplit($properties);
 			$properties = array('className' => $properties);
 		} else {
 			$alias = $key;
@@ -176,6 +176,29 @@ abstract class LazyModel extends Model {
 			}
 		}
 		return parent::bindModel($models, $reset);
+	}
+
+	/**
+	 * Splits plugin name and class. For CakePHP 1.2 compatibility.
+	 *
+	 * @param string $name The name you want to plugin split.
+	 * @param boolean $dotAppend Set to true if you want the plugin to have a '.' appended to it.
+	 * @param string $plugin Optional default plugin to use if no plugin is found. Defaults to null.
+	 * @return array Array with 2 indexes.  0 => plugin name, 1 => classname.
+	 * @access private
+	 */
+	private function pluginSplit($name, $dotAppend = false, $plugin = null) {
+		if (function_exists('pluginSplit')) {
+			return pluginSplit($name, $dotAppend, $plugin);
+		}
+		if (strpos($name, '.') !== false) {
+			$parts = explode('.', $name, 2);
+			if ($dotAppend) {
+				$parts[0] .= '.';
+			}
+			return $parts;
+		}
+		return array($plugin, $name);
 	}
 }
 ?>
