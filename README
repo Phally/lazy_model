@@ -13,7 +13,7 @@ Facts:
 
 Setup:
 
-1.	Clone the plugin to you APP/plugins directory (or as a git submodule in that folder).
+1.	Clone the plugin to your APP/plugins directory (or as a git submodule in that folder).
 2.	Put the following code in APP/app_model.php:
 
 		<?php
@@ -27,7 +27,7 @@ Setup:
 Q&A:
 
 Q:	I have this page and it isn't really faster, doesn't it work?
-A:	It probably does, but the speed increase can vary a lot. The more models and assocaitions you
+A:	It probably does, but the speed increase can vary a lot. The more models and associations you
 		have and the less you use them, the higher the speed increase will be. If you use every model,
 		they will be instantiated just like CakePHP itself would do. Therefor it is important to use
 		Containable or any other behavior that limits the number of models that is used. Using
