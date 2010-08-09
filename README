@@ -39,6 +39,9 @@ A:	This is by design. When importing a Model using App::import() CakePHP will au
 		to AppModel it will be causing an endless loop. This Model essentially is designed to be
 		applied on every model and therefor implemented as a Lib.
 		(See: http://github.com/cakephp/cakephp/blob/1.3/cake/libs/configure.php#L1154)
+		
+		The libs folder was introduced in CakePHP 1.3, but it was already possible to use Libs in
+		CakePHP 1.2. It all boils down to some Inflector magic which was implemented earlier.
 
 Q:	My HABTM isn't completely lazy loaded, is this a bug?
 A:	No, full lazy loading only works when you specify your own model using the 'with' key in the
