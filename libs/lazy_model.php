@@ -133,7 +133,14 @@ abstract class LazyModel extends Model {
 	 */
 	private function map($key, $properties) {
 		list($alias, $properties) = $return = $this->properties($key, $properties);
-		$this->map[$alias] = $properties['className'];
+		if (isset($this->map[$alias])) {
+			list($plugin, $model) = $this->pluginSplit($this->map[$alias]);
+			if ($alias != $model) {
+				$this->map[$alias] = $properties['className'];
+			}
+		} else {
+			$this->map[$alias] = $properties['className'];
+		}
 		return $return;
 	}
 
