@@ -77,7 +77,7 @@ abstract class LazyModel extends Model {
 	}
 
 	/**
-	 * Magic method to check whether a propery/model already exists or if it is mapped for lazy loading.
+	 * Magic method to check whether a property/model already exists or if it is mapped for lazy loading.
 	 *
 	 * @param string $alias Name of the property.
 	 * @return boolean The property is set or will be set after lazy loading.
