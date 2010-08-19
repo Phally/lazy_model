@@ -186,6 +186,33 @@ abstract class LazyModel extends Model {
 	}
 
 	/**
+	 * Override to avoid loading models that shouldn't be loaded.
+	 *
+	 * @return boolean Success
+	 * @access public
+	 */
+	public function resetAssociations() {
+		if (!empty($this->__backAssociation)) {
+			foreach ($this->__associations as $type) {
+				if (isset($this->__backAssociation[$type])) {
+					$this->{$type} = $this->__backAssociation[$type];
+				}
+			}
+			$this->__backAssociation = array();
+		}
+
+		foreach ($this->__associations as $type) {
+			foreach ($this->{$type} as $key => $name) {
+				if (property_exists($this, $key) && !empty($this->{$key}->__backAssociation)) {
+					$this->{$key}->resetAssociations();
+				}
+			}
+		}
+		$this->__backAssociation = array();
+		return true;
+	}
+
+	/**
 	 * Splits plugin name and class. For CakePHP 1.2 compatibility.
 	 *
 	 * @param string $name The name you want to plugin split.

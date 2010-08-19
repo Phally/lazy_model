@@ -79,6 +79,18 @@ class LazyModelTestCase extends CakeTestCase {
 		$this->assertEqual(Set::extract('/Article/id', $results), array(1,2));
 		$this->assertEqual(array_keys($results[0]), array('User', 'Article'));
 	}
+
+	public function testResetAssociations() {
+		$article = ClassRegistry::init('Article');
+		$article->Behaviors->attach('Containable');
+
+		$this->assertFalse(property_exists($article, 'User'));
+		$this->assertTrue(property_exists($article, 'Tag'));
+
+		$article->find('first', array('contain' => array('Tag')));
+
+		$this->assertFalse(property_exists($article, 'User'));
+	}
 	
 	public function endTest() {
 		ClassRegistry::flush();
