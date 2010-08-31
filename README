@@ -66,9 +66,9 @@ A:  Yes, but not one of this plugin. It has to do with the PHP4 compatibility of
 
     This will get rid of the error.
 
-Q:  When I use Model::deleteAll() on a 'with' model without a (single field) primary key directly 
-    and the 'with' model is the primary model of the Controller, CakePHP still wants to delete
-    records using the 'id' field. It used to work before. What can I do?
+Q:  When I use Model::deleteAll() on a 'with' model with only two fields directly, where the 'with'
+    model is the primary model of the Controller, CakePHP still wants to delete records using the 
+    'id' field. It used to work before. What can I do?
 A:  Because CakePHP creates the models all at once by default, the primary key is set to one of
     the foreign IDs through the association of the parent HABTM model. LazyModel prevents the
     loading of those models, so the primary key isn't set. I tried to fix this, but it is
