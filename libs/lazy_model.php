@@ -59,8 +59,8 @@ abstract class LazyModel extends Model {
 				if ($type != 'hasAndBelongsToMany') {
 					$this->map($key, $properties);
 				} elseif (isset($properties['with'])) {
-					list($primaryAlias, $properties) = $this->map($key, $properties);
-					list($joinAlias, $properties) = $this->map(0, (is_array($properties['with'])) ? key($properties['with']) : $properties['with']);
+					list($primaryAlias, $void) = $this->map($key, $properties);
+					list($joinAlias, $void) = $this->map(0, (is_array($properties['with'])) ? key($properties['with']) : $properties['with']);
 					$this->joinModels[$joinAlias] = $primaryAlias;
 				}
 			}
