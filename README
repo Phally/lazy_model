@@ -81,6 +81,24 @@ A:  Because CakePHP creates the models all at once by default, the primary key i
     This doesn't mean you always need to set the primary key before calling Model::deleteAll(). It
     only needs to be done in this specific case.
 
+Q:  Hey, the 'required' classes in my forms are gone! Can I fix this?
+A:  Duuh! The FormHelper checks whether a Model is set in the ClassRegistry or not and if it is, it
+    will check the validation rules if it needs to add the 'required' class somewhere. So the
+    reason the classes are gone is because the Models aren't in the ClassRegistry anymore.
+
+    Fixing this is quite easy. Just call the Models you use in your action like this:
+
+	public function admin_add() {
+        $this->Model->AssociatedModel;
+        $this->Model->OtherAssociatedModel;
+
+        // Some data checking and saving.
+    }
+
+    This will instantiate the Models and place them in the ClassRegistry. Of course this will
+    make the action slightly slower and bigger, but (in my opinion) it will still beat loading
+    the entire model chain.
+
 Q:  Was this your own idea?
 A:  Not really, there are more tries at this, but I couldn't really make them work like I had in
     mind and so started my own little project using a slightly different approach. However, I
