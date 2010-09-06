@@ -88,7 +88,7 @@ A:  Duuh! The FormHelper checks whether a Model is set in the ClassRegistry or n
 
     Fixing this is quite easy. Just call the Models you use in your action like this:
 
-	public function admin_add() {
+    public function admin_add() {
         $this->Model->AssociatedModel;
         $this->Model->OtherAssociatedModel;
 
