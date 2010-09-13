@@ -99,6 +99,11 @@ A:  Duuh! The FormHelper checks whether a Model is set in the ClassRegistry or n
     make the action slightly slower and bigger, but (in my opinion) it will still beat loading
     the entire model chain.
 
+Q:  What the hell?! My form had a checkbox/textarea/whatever for a specific datatype and with
+    LazyModel it has become just another text input. Where did it go?
+A:  This issue is related to the previous one and can be fixed the same way. You can also add
+    'type' => 'textarea' to the options of FormHelper::input() for example to fix it.
+
 Q:  Was this your own idea?
 A:  Not really, there are more tries at this, but I couldn't really make them work like I had in
     mind and so started my own little project using a slightly different approach. However, I
