@@ -19,6 +19,41 @@ class Tag extends LazyAppModel {
 	public $hasAndBelongsToMany = array('Article');
 }
 
+class HalfLazyLoadedArticle extends LazyAppModel {
+	public $useTable = 'articles';
+	public $belongsTo = array('HalfLazyLoadedUser');
+	public $hasAndBelongsToMany = array(
+		'HalfLazyLoadedTag' => array(
+			'className' => 'HalfLazyLoadedTag',
+			'with' => 'HalfLazyLoadedArticlesTag',
+			'joinTable' => 'articles_tags',
+			'associationForeignKey' => 'tag_id'
+		)
+	);
+}
+
+class HalfLazyLoadedUser extends LazyAppModel {
+	public $useTable = 'users';
+	public $hasMany = array('HalfLazyLoadedArticle');
+}
+
+class HalfLazyLoadedTag extends LazyAppModel {
+	public $useTable = 'Tags';
+	public $hasAndBelongsToMany = array(
+		'HalfLazyLoadedArticle' => array(
+			'className' => 'HalfLazyLoadedArticle',
+			'with' => 'HalfLazyLoadedArticlesTag',
+			'joinTable' => 'articles_tags',
+			'associationForeignKey' => 'article_id'
+		)
+	);
+}
+
+class HalfLazyLoadedArticlesTag extends LazyAppModel {
+	public $useTable = 'articles_tags';
+	public $belongsTo = array('HalfLazyLoadedArticle', 'HalfLazyLoadedTag');
+}
+
 class LazyModelTestCase extends CakeTestCase {
 	public $fixtures = array('core.article', 'core.user', 'core.tag', 'core.articles_tag');
 	
@@ -44,6 +79,20 @@ class LazyModelTestCase extends CakeTestCase {
 		$this->assertTrue(property_exists($article, 'Tag'));
 		$this->assertTrue(property_exists($article, 'ArticlesTag'));
 		$this->assertTrue(property_exists($article, 'User'));
+	}
+
+	public function testOptimizedLazyLoadingHABTM() {
+		$article = ClassRegistry::init('HalfLazyLoadedArticle');
+
+		$this->assertFalse(property_exists($article, 'HalfLazyLoadedTag'));
+		$this->assertTrue(property_exists($article, 'HalfLazyLoadedArticlesTag'));
+		$this->assertFalse(property_exists($article, 'HalfLazyLoadedUser'));
+
+		$article->HalfLazyLoadedUser->create();
+
+		$this->assertFalse(property_exists($article, 'HalfLazyLoadedTag'));
+		$this->assertTrue(property_exists($article, 'HalfLazyLoadedArticlesTag'));
+		$this->assertTrue(property_exists($article, 'HalfLazyLoadedUser'));
 	}
 	
 	public function testNoRecursion() {

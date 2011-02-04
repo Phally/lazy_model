@@ -44,10 +44,18 @@ A:  This is by design. When importing a Model using App::import() CakePHP will a
     CakePHP 1.2. It all boils down to some Inflector magic which was implemented earlier.
 
 Q:  My HABTM isn't completely lazy loaded, is this a bug?
-A:  No, full lazy loading only works when you specify your own model using the 'with' key in the
-    association. This is because when using an auto model as join model CakePHP will need the two
-    other models to guess the name of the join model and they still would be instantiated. So if
-    you	want to speed that up, use a 'with' model or don't use HABTM at all.
+A:  No, full lazy loading for HABTM never works, because CakePHP needs to fill all sorts of
+    settings in the associations and it needs at least the join model for that. You can optimize
+    this though. It will be only half loaded when you set the 'with', 'associationForeignKey' and
+    'joinTable' keys in your HABTM association. In this case CakePHP will only load the join model.
+
+    See the test cases for details on how to set it up.
+
+    You will notice it will make a bit of a mess. So I suggest you only do this when you really
+    need to. It is probably not even worth it. Another way to speed up HABTM is to not use it at
+    all. You can split things up as hasMany and belongsTo associations. More on this can be found
+    in the book under heading "What to do when HABTM becomes complicated?".
+    (See: http://book.cakephp.org/view/1034/Saving-Related-Model-Data-HABTM)
 
 Q:  ACL breaks on CakePHP 1.2, is this a bug?
 A:  Yes, but not one of this plugin. It has to do with the PHP4 compatibility of CakePHP. The
