@@ -19,6 +19,10 @@ abstract class PreImplementation extends LazyAppModel {
 	}
 }
 
+abstract class AliasScrewUp extends PreImplementation {
+	public $alias = 'InheritedAliasRapist';
+}
+
 /**
  * Normal lazy loading.
  */
@@ -84,5 +88,9 @@ class InheritedArticle extends PreImplementation {
 class InheritedUser extends PreImplementation {
 	public $useTable = 'users';
 	public $hasMany = array('InheritedArticle');
+}
+
+class InheritedTag extends AliasScrewUp {
+	public $useTable = 'tags';
 }
 ?>

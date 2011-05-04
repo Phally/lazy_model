@@ -58,6 +58,12 @@ class LazyModelTestCase extends CakeTestCase {
 		$this->assertTrue($article->InheritedUser->getStuff());
 	}
 
+	public function testAliasRapingInheritance() {
+		$tag = ClassRegistry::init('InheritedTag');
+		$this->assertIdentical($tag->aliasOnConstructor, 'InheritedAliasRapist');
+		$this->assertTrue($tag->getStuff());
+	}
+
 	public function testNoRecursion() {
 		$article = ClassRegistry::init('Article');
 		$results = $article->find('all', array('recursive' => -1));
