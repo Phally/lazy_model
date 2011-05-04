@@ -1,6 +1,6 @@
 <?php
 /**
- * Abstract test model.
+ * Abstract test models.
  */
 abstract class LazyAppModel extends LazyModel {
 	public function getLazyMap() {
@@ -8,10 +8,20 @@ abstract class LazyAppModel extends LazyModel {
 	}
 }
 
+abstract class PreImplementation extends LazyAppModel {
+	public $aliasOnConstructor = '';
+	public function __construct($id = false, $table = null, $ds = null) {
+		parent::__construct($id, $table, $ds);
+		$this->aliasOnConstructor = $this->alias;
+	}
+	public function getStuff() {
+		return true;
+	}
+}
+
 /**
  * Normal lazy loading.
  */
-
 class Article extends LazyAppModel {
 	public $belongsTo = array('User');
 	public $hasAndBelongsToMany = array('Tag');
@@ -61,5 +71,18 @@ class HalfLazyLoadedTag extends LazyAppModel {
 class HalfLazyLoadedArticlesTag extends LazyAppModel {
 	public $useTable = 'articles_tags';
 	public $belongsTo = array('HalfLazyLoadedArticle', 'HalfLazyLoadedTag');
+}
+
+/**
+ * Inheritance.
+ */
+class InheritedArticle extends PreImplementation {
+	public $useTable = 'articles';
+	public $belongsTo = array('InheritedUser');
+}
+
+class InheritedUser extends PreImplementation {
+	public $useTable = 'users';
+	public $hasMany = array('InheritedArticle');
 }
 ?>

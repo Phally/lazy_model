@@ -43,6 +43,21 @@ class LazyModelTestCase extends CakeTestCase {
 		$this->assertTrue(property_exists($article, 'HalfLazyLoadedUser'));
 	}
 
+	public function testInheritance() {
+		$article = ClassRegistry::init('InheritedArticle');
+		$this->assertFalse(property_exists($article, 'InheritedUser'));
+
+		$article->InheritedUser->create();
+
+		$this->assertTrue(property_exists($article, 'InheritedUser'));
+
+		$this->assertIdentical($article->aliasOnConstructor, 'InheritedArticle');
+		$this->assertIdentical($article->InheritedUser->aliasOnConstructor, 'InheritedUser');
+
+		$this->assertTrue($article->getStuff());
+		$this->assertTrue($article->InheritedUser->getStuff());
+	}
+
 	public function testNoRecursion() {
 		$article = ClassRegistry::init('Article');
 		$results = $article->find('all', array('recursive' => -1));
